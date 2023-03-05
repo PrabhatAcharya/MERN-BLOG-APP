@@ -1,91 +1,123 @@
-import  {React} from 'react'
-import {Box,TextField,Button ,styled,Typography} from '@mui/material'
-import { margin } from '@mui/system';
-import { useState } from 'react'
+import React from 'react'
+import {Box , TextField , Button , styled , Typography} from '@mui/material';
+import { useState } from 'react';
+import {API} from '../../service/api';
+
 const Component = styled(Box)`
- width:400px;
- margin:auto;
- box-shadow:5px 2px 5px 2px rgba(0 0 0 /0.6);
-`;
-const Image= styled('img')({
-  width:"30%",
-  height:"30%",
-  margin:"auto",
-  display: "flex",
-  padding:"50px 20px",
-});
+width : 400px;
+margin : auto;
+box-shadow : 5px 2px 5px 2px rgba(0 0 0/0.6);
+`
+const Image = styled('img')({
+    width : 100,
+    margin : 'auto',
+    display : 'flex',
+    padding : '50px 0 0'
+})
 
 const Wrapper = styled(Box)`
-padding-top: 25px 35px;
-display :flex;
-flex-direction: column;
-flex:1;
-&> div,&>button,&>p{
-    margin-top:20px,
+padding : 25px 35px;
+display : flex;
+flex-direction : column;
+flex : 1;
+& > div , & > button , & > p {
+    margin-top : 20px;
 }
-`;
+`
 
-const Loginbtn = styled(Button)`
-text-transform:none;
-background:#FB641B;
-color:#fff;
-height:48px;
-border-radius:2px;
-`;
-const Signinbtn = styled(Button)`
-text-transform:none;
-background:#fff;
-color:#2874f0;
-height:48px;
-border-radius:2px;
-box-shadow:0 2px 4px 0 rgba(0 0 0 /20%);
-`;
- const Text=styled(Typography)`
- font-size:16px;
- color:#878787
- `;
+const LoginButton = styled(Button)`
+text-transform : none;
+background : #FB641B;
+color : #fff;
+height : 48px;
+border-radius : 2px;
+`
 
-export default function Login() {
-    const imageUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-UJXkFPrl0zD9gUX1q2fbwJ9xiLL78XkyZQ&usqp=CAU'
-  
-  const [account, setAccount] =useState('login')
-  const toggleSignup=()=>{
-    account==='login' ? setAccount("signup") : setAccount("login")
-  }
-//getting value from signup textfield for storing it in db
-const[signup, setSignup] = useState({
-  name: "",
-  username: "",
-  password: "",
-})
-const onInputChange=(event)=>{
-  setSignup({...signup,[event.target.name]:event.target.value})
+const SignupButton = styled(Button)`
+text-transform : none;
+background : #fff;
+color : #2874f0;
+height : 48px;
+border-radius : 2px;
+box-shadow : 0 2px 4px 0 rgb(0 0 0 / 20%);
+`
+
+const Text = styled(Typography)`
+font-size : 16px;
+color : #878787;
+`
+
+const Error = styled(Typography)`
+font-size : 10px;
+line-height : 0;
+margin-top : 10px;
+font-weight : 600;
+color : #ff6161;
+`
+
+const signupInitialvalues = {
+    name : '',
+    username : '',
+    password : '',
 }
+ const Login = () =>{
+    const imageURL = 'https://www.sesta.it/wp-content/uploads/2021/03/logo-blog-sesta-trasparente.png';
 
-  return (
-<Component>
-<Box>
-<Image src={imageUrl} alt="BlogLog" />
+     const [account , setAccount] = useState('login');
+     const[signUp , setSignup] = useState(signupInitialvalues);
+     const[error , setError] = useState('');
 
+     const togglebtn = function(){
+      account == 'signup' ? setAccount('login') :   setAccount('signup');
+     }
 
-{
-  account==='login'? <Wrapper>
-<TextField  variant="standard" label="Enter UserName" />
-<TextField  variant="standard" label="Enter Password"/>
-<Loginbtn variant="contained">Login</Loginbtn>
-<Text style={{textAlign:"center"}}>OR</Text>
-<Signinbtn onClick={toggleSignup}>Create an account </Signinbtn>
-</Wrapper> :
-<Wrapper>
-<TextField  variant="standard" onChange={onInputChange} name='name' label="Name"/>
-<TextField  variant="standard" onChange={onInputChange}  name='username' label="Enter UserName" />
-<TextField  variant="standard" onChange={onInputChange} name='password' label="Enter Password"/>
-<Signinbtn >Signup</Signinbtn>
-<Text style={{textAlign:"center"}}>OR</Text>
-<Loginbtn variant="contained" onClick={toggleSignup}>Already have an account </Loginbtn>
-</Wrapper>
-}
-</Box>
-</Component>
-  )
-}
+     const onInputchange = (e) =>{
+        setSignup({...signUp , [e.target.name] : e.target.value})
+     } 
+
+     const signupUser = async() =>{
+      let response = await API.userSignup(signUp);
+      if(response.isSuccess) {
+        setError('');
+        setSignup(signupInitialvalues);
+        setAccount('login');
+
+      } else {
+        setError('Something went wrong ! Please try again')
+      }
+     }
+
+    return(
+        <Component>
+            <Box>
+            <Image src = {imageURL} alt = "loginImg" />
+            {
+            account === 'login' ? 
+            <Wrapper>
+            <TextField  variant="standard" label = "Enter Username"/>
+            <TextField  variant="standard" label = "Enter Password"/>
+            
+            {error && <Error>{error}</Error>}
+
+            <LoginButton variant="contained" >Login</LoginButton>
+            <Text style={{textAlign : "center"}}>OR</Text>
+            <SignupButton onClick={togglebtn}>Create an account</SignupButton>
+            </Wrapper>
+:
+            <Wrapper>
+            <TextField  variant="standard" label = "Enter Name" onChange={onInputchange} name = 'name'/>
+            <TextField  variant="standard" label = "Enter Username" onChange={onInputchange} name = 'username'/>
+            <TextField  variant="standard" label = "Enter Password" onChange={onInputchange} name = 'password'/>
+
+             {error && <Error>{error}</Error>}
+            <SignupButton onClick={signupUser}>SignUp</SignupButton>
+            <Text style={{textAlign : "center"}}>OR</Text>
+            <LoginButton variant="contained" onClick={togglebtn}>Already have an account?</LoginButton>
+            </Wrapper>
+            }
+            </Box>
+        </Component>
+    )
+ }
+
+ export default Login;
