@@ -1,8 +1,9 @@
 import React from 'react'
 import {Box , TextField , Button , styled , Typography} from '@mui/material';
-import { useState } from 'react';
-import {API} from '../../service/api';
-
+import { useState,useContext } from 'react';
+import {API} from '../../services/api';
+import { DataContext } from '../../context/DataProvider';
+import { useNavigate } from 'react-router-dom';
 const Component = styled(Box)`
 width : 400px;
 margin : auto;
@@ -60,13 +61,14 @@ const signupInitialvalues = {
     username : '',
     password : '',
 }
- const Login = () =>{
+ const Login = ({isUserAuthenticated}) =>{
     const imageURL = 'https://www.sesta.it/wp-content/uploads/2021/03/logo-blog-sesta-trasparente.png';
 
      const [account , setAccount] = useState('login');
      const[signUp , setSignup] = useState(signupInitialvalues);
      const[error , setError] = useState('');
 
+   
      const togglebtn = function(){
       account == 'signup' ? setAccount('login') :   setAccount('signup');
      }
@@ -87,6 +89,39 @@ const signupInitialvalues = {
       }
      }
 
+     //login implementation  fn
+     const [login,setlogin]=useState({
+        username : '',
+        password : '',
+     });
+     const onValueChnage=(e)=>{
+        setlogin({...login, [e.target.name] : e.target.value});
+
+
+     }
+
+     const {setAccountContext} = useContext(DataContext)//storing usernam and name in contextApi to make available globaly we have used ContextApi
+
+     const navigate=useNavigate();
+
+     const loginUser = async() =>{
+        let response=await API.userLogin(login)
+        if(response.isSuccess) {
+            setError('');
+            sessionStorage.setItem('accessToken',`Bearer ${response.data.accessToken}`);
+            sessionStorage.setItem('refreshToken',`Bearer ${response.data.refreshToken}`);
+            setAccountContext({username: response.data.username, name:response.data.name})
+          
+            isUserAuthenticated(true);
+            navigate('/');
+          
+          
+          } else {
+            setError('Something went wrong ! Please try again')
+          }
+     }
+
+
     return(
         <Component>
             <Box>
@@ -94,12 +129,12 @@ const signupInitialvalues = {
             {
             account === 'login' ? 
             <Wrapper>
-            <TextField  variant="standard" label = "Enter Username"/>
-            <TextField  variant="standard" label = "Enter Password"/>
+            <TextField  variant="standard" value={login.username} onChange={onValueChnage} name="username" label = "Enter Username"/>
+            <TextField  variant="standard" value={login.password} onChange={onValueChnage} name="password" label = "Enter Password"/>
             
             {error && <Error>{error}</Error>}
 
-            <LoginButton variant="contained" >Login</LoginButton>
+            <LoginButton variant="contained" onClick={loginUser} >Login</LoginButton>
             <Text style={{textAlign : "center"}}>OR</Text>
             <SignupButton onClick={togglebtn}>Create an account</SignupButton>
             </Wrapper>
