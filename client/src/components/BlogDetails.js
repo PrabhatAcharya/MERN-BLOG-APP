@@ -6,6 +6,7 @@ import { Box, Typography, TextField, Button, InputLabel } from "@mui/material";
 
 const labelStyle = { mb: 1, mt: 2, fontSize: "24px", fontWeight: "bold" };
 const BlogDetails = () => {
+    const URL = "https://mernblogbackend-2rv0.onrender.com";
   const navigate=useNavigate();
   const [blog,setBlog]=useState();
   const id=useParams().id;
@@ -18,7 +19,7 @@ const BlogDetails = () => {
       }));
     };
   const fetchDetails=async () => {
-    const res=await axios.get(`http://localhost:8080/api/blog/${id}`).catch(err=>console.log(err))
+    const res=await axios.get(`${URL}/api/blog/${id}`).catch(err=>console.log(err))
     const data=await res.data;
     return data;
   }
@@ -34,7 +35,7 @@ fetchDetails().then(data=>{
 },[id])
 // console.log(blog);
 const sendRequest =async ()=>{
-  const res=await axios.put(`http://localhost:8080/api/blog/update/${id}`,{
+  const res=await axios.put(`${URL}/api/blog/update/${id}`,{
     title:inputs.title,
     description:inputs.description,
   }).catch(err => console.log(err));

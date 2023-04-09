@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 const labelStyle={mb:1,mt:2,fontSize:'24px',fontWeight:'bold'}
 
 function AddBlog() {
+
+  const URL = "https://mernblogbackend-2rv0.onrender.com";
+
+
  const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     title: "",
@@ -19,14 +23,16 @@ function AddBlog() {
     }));
   }
    const sendRequest=async ()=>{
-    const res =await axios.post("http://localhost:8080/api/blog/add",{
-      title: inputs.title,
-      description: inputs.description,
-      image: inputs.imageURL,
-      user:localStorage.getItem("userId")
-    }).catch(error=>{
-      console.log(error);
-    })
+    const res = await axios
+      .post(`${URL}/api/blog/add`, {
+        title: inputs.title,
+        description: inputs.description,
+        image: inputs.imageURL,
+        user: localStorage.getItem("userId"),
+      })
+      .catch((error) => {
+        console.log(error);
+      });
    const data = await res.data;
    return data;
     

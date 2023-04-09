@@ -2,12 +2,13 @@ import React, {useState, useEffect } from 'react'
 import axios from 'axios';
 import BlogCard from './BlogCard';
 const UserBlogs = () => {
+    const URL = "https://mernblogbackend-2rv0.onrender.com";
   const id=localStorage.getItem('userId');
       const [user, setUser] = useState([]);
 
   const sendRequest=async () => {
     const res = await axios
-      .get(`http://localhost:8080/api/blog/user/${id}`)
+      .get(`${URL}/api/blog/user/${id}`)
       .catch((err) => {
         console.error(err);
       });

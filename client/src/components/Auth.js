@@ -4,7 +4,10 @@ import axios from 'axios'
 import { useDispatch } from "react-redux";
 import {authActions} from "../store/index.js";
 import {useNavigate} from "react-router-dom"
+
 const Auth = () => {
+
+    const URL = "https://mernblogbackend-2rv0.onrender.com";
   const navigate=useNavigate()
   const dispatch=useDispatch()
   const [inputs,setInputs]=useState({
@@ -21,13 +24,17 @@ const Auth = () => {
   }
   const sendRequest=async(type="login")=>{
    const res = await axios
-     .post(`http://localhost:8080/api/user/${type}`, {
+     .post(`${URL}/api/user/${type}`, {
       name:inputs.name,
        email: inputs.email,
        password: inputs.password,
      })
-     .catch((error) => console.log(error));
+     .catch((error) =>{
+      console.log("mymessage", error.response.data.message);
+      alert(error.response.data.message);
+     });
     const data=await res.data;
+    // alert("Welcome");
     return data
   }
   const handleSubmit=(event)=>{

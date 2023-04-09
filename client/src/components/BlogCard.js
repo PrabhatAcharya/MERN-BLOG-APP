@@ -15,6 +15,7 @@ import axios from "axios";
 
 export default function BlogCard({myid,title,description,imageURL,userName,isUser}) {
   // console.log(title,isUser)
+    const URL = "https://mernblogbackend-2rv0.onrender.com";
  const navigate = useNavigate();
   // console.log("BlogCard-id", myid);
   const handleEdit = () => {
@@ -22,13 +23,13 @@ export default function BlogCard({myid,title,description,imageURL,userName,isUse
     navigate(`/myBlogs/${myid}`);
   };
   const deleteRequest=async () => {
-    const res = await axios.delete(`http://localhost:8080/api/blog/${myid}`).catch(err => console.log(err));
+    const res = await axios.delete(`${URL}/api/blog/${myid}`).catch(err => console.log(err));
     const data=await res.data;
     return data;
   
   }
   const handleDelete =()=>{
-    deleteRequest().then(()=>navigate("/")).then(()=>navigate("/blogs/"))
+    deleteRequest().then(()=>navigate("/"))
   }
 
   return (
