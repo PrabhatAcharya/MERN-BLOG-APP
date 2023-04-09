@@ -9,6 +9,7 @@ import BlogDetails from './components/BlogDetails';
 import AddBlog from './components/AddBlog';
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from './store';
+import HomePage from './components/HomePage.jsx';
 function App() {
   const dispatch=useDispatch();
   const isLoggedIn =useSelector((state)=>state.isLoggedIn)
@@ -23,17 +24,21 @@ function App() {
       <header>
         <Header />
       </header>
-      <main>
+      <main >
         <Routes>
-        {!isLoggedIn ? ( <Route path="/auth" element={<Auth />} />):
+        <>
+        <Route path="/auth" element={<Auth/>} />
+        {!isLoggedIn ? ( <Route path="/" element={<HomePage />}/>) :
          
         ( <>
+
            <Route path="/blogs" element={<Blogs />} />
           <Route path="/myBlogs" element={<UserBlogs />} />
           <Route path="/myBlogs/:id" element={<BlogDetails />} />
           <Route path="/blogs/add" element={<AddBlog />} />
          </>)
         }
+        </>
         </Routes>
       </main>
     </React.Fragment>
