@@ -1,50 +1,42 @@
-import {BrowserRouter,Routes,Route,Navigate, Outlet} from 'react-router-dom';
-import Login from './components/account/Login';
-import DataProvider from './context/DataProvider';
-import Home from './components/home/Home';
-import Header from './components/header/Header';
-import CreatePost from './components/create/CreatePost';
-import { useState } from 'react';
-
-
-
-const PrivateRoute=({isAuthenticated,...props})=>{
-  return isAuthenticated ?
-  <>
-  <Header/>
-    <Outlet />
-  </>
-  : <Navigate replace to='/login'/>
-}
-
-
-
-
+import React, { useEffect } from 'react';
+import './App.css';
+import Header from './components/Header';
+import { Route, Routes } from 'react-router-dom';
+import Auth from './components/Auth';
+import Blogs from './components/Blogs';
+import UserBlogs from './components/UserBlogs';
+import BlogDetails from './components/BlogDetails';
+import AddBlog from './components/AddBlog';
+import { useSelector, useDispatch } from "react-redux";
+import { authActions } from './store';
 function App() {
-  const [isAuthenticated,isUserAuthenticated] =useState(false);
+  const dispatch=useDispatch();
+  const isLoggedIn =useSelector((state)=>state.isLoggedIn)
+  console.log(isLoggedIn)
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      dispatch(authActions.login());
+    }
+  }, [dispatch]);
   return (
-    
-    <DataProvider>
-    <BrowserRouter>
-   
-    <div style={{marginTop:"100px"}}>
-    <Routes>
-
-     <Route path='/login' element={<Login isUserAuthenticated={isUserAuthenticated}/>}/>
-
-     <Route path='/' element={<PrivateRoute isAuthenticated={isAuthenticated}/>}>
-     <Route path='/' element={<Home/>}/>
-     </Route>
-
-     <Route path='/create' element={<PrivateRoute isAuthenticated={isAuthenticated}/>}>
-     <Route path='/create' element={<CreatePost/>}/>
-     </Route>
-   
-     </Routes>
-     </div>
-     </BrowserRouter>
-   </DataProvider>
-  
+    <React.Fragment>
+      <header>
+        <Header />
+      </header>
+      <main>
+        <Routes>
+        {!isLoggedIn ? ( <Route path="/auth" element={<Auth />} />):
+         
+        ( <>
+           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/myBlogs" element={<UserBlogs />} />
+          <Route path="/myBlogs/:id" element={<BlogDetails />} />
+          <Route path="/blogs/add" element={<AddBlog />} />
+         </>)
+        }
+        </Routes>
+      </main>
+    </React.Fragment>
   );
 }
 
